@@ -1,4 +1,5 @@
 Temporary, sloppily written Mercury launcher designed to keep things simple until the next update (eventually) releases.
+
 Uses a bunch of libraries that I'm too lazy to write here, notably MinHook, libcurl & libzip
 
 # Usage
