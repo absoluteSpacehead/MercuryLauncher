@@ -27,11 +27,10 @@ void SetSubGameHook(void* thisref, uint8_t SubGame)
 
     PWSTR rawLocalAppData;
     SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &rawLocalAppData);
-    std::wstring localAppData(rawLocalAppData);
+    std::wstring dllPath(rawLocalAppData);
+    dllPath += L"\\Mercury\\Mercury-1.8.dll";
 
     CoTaskMemFree(rawLocalAppData);
-
-    std::wstring dllPath(localAppData + L"\\Mercury\\Mercury-1.8.dll");
 
     // reference https://github.com/ZeroMemoryEx/Dll-Injector/blob/master/DLL-Injector/Dll-Injector.cpp#L43
     HANDLE fnHandle = OpenProcess(PROCESS_ALL_ACCESS, 0, GetCurrentProcessId());
