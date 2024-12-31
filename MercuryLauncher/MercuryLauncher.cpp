@@ -30,6 +30,7 @@ HANDLE job;
 void Exit()
 {
     std::cout << "Press any key to exit.\n";
+    TerminateJobObject(job, 0);
     _getch();
 }
 
