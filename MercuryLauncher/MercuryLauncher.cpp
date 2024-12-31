@@ -338,7 +338,7 @@ int Setup18()
 
     GetLocalAppData(localAppData);
 
-    // check that we have our dll
+    // check that we have our dll. this isn't required for OT so it's not linked, means you only need one file in the OT dir
     if (!std::filesystem::exists(".\\MercuryInjector.dll"))
     {
         std::cerr << "Required DLL (MercuryInjector.dll) is missing. Ensure all files were extracted properly.\n";
