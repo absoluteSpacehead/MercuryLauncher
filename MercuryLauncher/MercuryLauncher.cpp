@@ -263,9 +263,9 @@ int SetupOT()
         return 1;
 
     // are we pakless?
-    if (!std::filesystem::exists(CONTENT_PATH_OT))
+    if (!std::filesystem::exists(CONFIG_PATH_OT))
     {
-        std::cerr << "Build may not be pakless (Content folder not found). Ensure you downloaded the build from the Mercury server.\n";
+        std::cerr << "Build may not be pakless (Config folder not found). Ensure you downloaded the build from the Mercury server.\n";
         return 2;
     }
 
