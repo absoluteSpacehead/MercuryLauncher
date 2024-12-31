@@ -316,7 +316,7 @@ int SetupOT()
     STARTUPINFOW startupInfo = { 0 };
     startupInfo.cb = sizeof(STARTUPINFO);
     PROCESS_INFORMATION processInformation = { 0 };
-    CreateProcessW((LPWSTR)BINARY_PATH_OT, nullptr, nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
+    CreateProcessW(BINARY_PATH_OT, nullptr, nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
 
     AssignProcessToJobObject(job, processInformation.hProcess);
 
@@ -383,7 +383,7 @@ int Setup18()
     std::wstring cmdl(BINARY_PATH_1_8);
     cmdl += L" -skippatchcheck -epicportal -HTTP=WinInet -log";
 
-    CreateProcessW((LPWSTR)BINARY_PATH_1_8, &cmdl[0], nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
+    CreateProcessW(BINARY_PATH_1_8, &cmdl[0], nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
 
     AssignProcessToJobObject(job, processInformation.hProcess);
 
