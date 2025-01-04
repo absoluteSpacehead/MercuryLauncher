@@ -317,7 +317,9 @@ int SetupOT()
     STARTUPINFOW startupInfo = { 0 };
     startupInfo.cb = sizeof(STARTUPINFO);
     PROCESS_INFORMATION processInformation = { 0 };
-    CreateProcessW(BINARY_PATH_OT, nullptr, nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
+    std::wstring cmd(BINARY_PATH_OT);
+    cmd += L" -log -AUTH_LOGIN=unknown -AUTH_PASSWORD=5001 -AUTH_TYPE=exchangecode";
+    CreateProcessW(BINARY_PATH_OT, &cmd[0], nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
 
     AssignProcessToJobObject(job, processInformation.hProcess);
 
