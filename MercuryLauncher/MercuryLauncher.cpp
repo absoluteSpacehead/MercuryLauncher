@@ -497,7 +497,7 @@ int main()
     }
     else
     {
-        std::cerr << "No binaries could be found. Ensure the launcher is placed alongside the FortniteGame and Content folders.\n";
+        std::cerr << "No binaries could be found. Ensure the launcher is placed alongside the FortniteGame and Engine folders.\n";
         Exit();
         return 1;
     }
