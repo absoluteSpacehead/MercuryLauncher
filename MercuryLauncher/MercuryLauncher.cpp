@@ -10,6 +10,7 @@
 #define LAWIN_URL "https://github.com/Lawin0129/LawinServer/zipball/master"
 
 #define BINARY_PATH_OT L".\\FortniteGame\\Binaries\\Win32\\FortniteClient-Win32-Shipping.exe"
+#define BINARY_PATH_OT_FUCKBLK L".\\FortniteGame\\Binaries\\Win32\\FortniteClient-Win64-Shipping.exe" // what the actual fuck is wrong with this guy
 #define CONTENT_PATH_OT L".\\FortniteGame\\Content\\"
 #define CONFIG_PATH_OT L".\\FortniteGame\\Config\\"
 #define DEFAULTENGINE_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/DefaultEngine.ini"
@@ -258,19 +259,31 @@ int RunLawin()
 
 // The setup for OT / 1.8 are *completely* different, to the point where theres no code shared between them
 
-int SetupOT()
+int SetupOTPak()
 {
-    int lawinStatus = RunLawin();
-    if (lawinStatus != 0)
-        return 1;
+    std::wstring pathAsWstring(CONTENT_PATH_OT);
+    pathAsWstring += L"Paks\\";
 
-    // are we pakless?
-    if (!std::filesystem::exists(CONFIG_PATH_OT))
+    // https://forums.unrealengine.com/t/overriding-or-swapping-out-asset-in-a-pak-file/472404
+    // despite arbitrary filenames working in 1.8, OT6.5 seemingly doesnt accept that?
+    if (!std::filesystem::exists(pathAsWstring + L"FortniteGame-WindowsClient_p.pak"))
     {
-        std::cerr << "Build may not be pakless (Config folder not found). Ensure you downloaded the build from the Mercury server.\n";
-        return 2;
+        std::cout << "Required Mercury file is missing. Downloading...\n";
+
+        if (DownloadFile(PAK_URL_OT, (pathAsWstring + L"FortniteGame-WindowsClient_p.pak").c_str()) != 0)
+        {
+            std::cerr << "Failed to download FortniteGame-WindowsClient_p.pak.\n";
+            return 3;
+        }
+
+        std::cout << "File downloaded.\n";
     }
 
+    return 0;
+}
+
+int SetupOTPakless()
+{
     std::wstring pathAsWstring(CONTENT_PATH_OT);
 
     // check if we have InGame_Gamemode.uasset. we download this last so if we're missing this we can download everything just to be safe
@@ -290,7 +303,7 @@ int SetupOT()
             std::cerr << "Failed to download DefaultGame.ini.\n";
             return 3;
         }
-        
+
         pathAsWstring = CONTENT_PATH_OT;
         if (DownloadFile(ABILITIES_URL, (pathAsWstring + L"GE_AllAbilities.uasset").c_str()) != 0)
         {
@@ -313,7 +326,43 @@ int SetupOT()
         std::cout << "All files downloaded.\n";
     }
 
-    std::cout << "Starting Fortnite...\nLoading may take a while. Enter anything on the login screen.\n";
+    return 0;
+}
+
+int SetupOT()
+{
+    int lawinStatus = RunLawin();
+    if (lawinStatus != 0)
+        return 1;
+
+    // i just cant fucking believe it
+    if (std::filesystem::exists(BINARY_PATH_OT_FUCKBLK))
+    {
+        std::cout << "Looks like this build was downloaded from blk. Fixing your build files...\n";
+        std::filesystem::rename(BINARY_PATH_OT_FUCKBLK, BINARY_PATH_OT);
+        std::filesystem::remove(L".\\FortniteGame\\Binaries\\Win32\\FortniteLauncher.exe");
+        std::filesystem::remove(L".\\FortniteGame\\Binaries\\Win32\\Launcher.bat");
+    }
+
+    // are we pakless?
+    if (!std::filesystem::exists(CONFIG_PATH_OT))
+    {
+        if (SetupOTPak() != 0)
+        {
+            std::cerr << "Failed to set up Mercury. (OT6.5 pakked)\n";
+            return 2;
+        }
+    }
+    else
+    {
+        if (SetupOTPakless() != 0)
+        {
+            std::cerr << "Failed to set up Mercury. (OT6.5 pakless)\n";
+            return 2;
+        }
+    }
+
+    std::cout << "Starting Fortnite...\nLoading may take a while.\n";
 
     STARTUPINFOW startupInfo = { 0 };
     startupInfo.cb = sizeof(STARTUPINFO);
@@ -349,9 +398,9 @@ int Setup18()
         return 4;
     }
 
-    // check that we have the mercury dll AND the pak. someone could be using the same build folder but have wiped their appdata, etc
+    // check that we have the mercury dll AND the sig. someone could be using the same build folder but have wiped their appdata, etc
     std::wstring pathAsWstring(PAKS_PATH_1_8);
-    if (!std::filesystem::exists(localAppData + L"\\Mercury-1.8.dll") || !std::filesystem::exists(pathAsWstring + L"zzz_LawinServer.pak"))
+    if (!std::filesystem::exists(localAppData + L"\\Mercury-1.8.dll") || !std::filesystem::exists(pathAsWstring + L"zzz_LawinServer.sig"))
     {
         std::cout << "Required Mercury files are missing. Downloading...\n";
 
@@ -361,13 +410,13 @@ int Setup18()
             return 2;
         }
 
-        if (DownloadFile(PAK_URL, (pathAsWstring + L"zzz_LawinServer.pak").c_str()) != 0)
+        if (DownloadFile(PAK_URL_18, (pathAsWstring + L"zzz_LawinServer.pak").c_str()) != 0)
         {
             std::cerr << "Failed to download zzz_LawinServer.pak.\n";
             return 2;
         }
 
-        if (DownloadFile(SIG_URL, (pathAsWstring + L"zzz_LawinServer.sig").c_str()) != 0)
+        if (DownloadFile(SIG_URL_18, (pathAsWstring + L"zzz_LawinServer.sig").c_str()) != 0)
         {
             std::cerr << "Failed to download zzz_LawinServer.sig.\n";
             return 2;
@@ -457,7 +506,7 @@ int main()
     CloseHandle(processInformation.hProcess);
     CloseHandle(processInformation.hThread);
 
-    if (std::filesystem::exists(BINARY_PATH_OT))
+    if (std::filesystem::exists(BINARY_PATH_OT) || std::filesystem::exists(BINARY_PATH_OT_FUCKBLK))
     {
         // we only have 1 32bit build lol
         int status = SetupOT();
