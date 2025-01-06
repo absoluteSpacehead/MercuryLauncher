@@ -12,18 +12,19 @@
 #define BINARY_PATH_OT L".\\FortniteGame\\Binaries\\Win32\\FortniteClient-Win32-Shipping.exe"
 #define CONTENT_PATH_OT L".\\FortniteGame\\Content\\"
 #define CONFIG_PATH_OT L".\\FortniteGame\\Config\\"
-#define DEFAULTENGINE_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/DefaultEngine.ini"
-#define DEFAULTGAME_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/DefaultGame.ini"
-#define ABILITIES_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/GE_AllAbilities.uasset"
-#define ACTOR_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/InGame_Actor.uasset"
-#define GAMEMODE_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/InGame_Gamemode.uasset"
+#define DEFAULTENGINE_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/DefaultEngine.ini"
+#define DEFAULTGAME_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/DefaultGame.ini"
+#define ABILITIES_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/GE_AllAbilities.uasset"
+#define ACTOR_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/InGame_Actor.uasset"
+#define GAMEMODE_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/InGame_Gamemode.uasset"
+#define PAK_URL_OT "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/FortniteGame-WindowsClient_p.pak"
 
 #define BINARY_PATH_1_8 L".\\FortniteGame\\Binaries\\Win64\\FortniteClient-Win64-Shipping.exe"
 #define PAKS_PATH_1_8 L".\\FortniteGame\\Content\\Paks\\"
 #define PRODUCT_VERSION_1_8 L"3724489"
-#define DLL_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/Mercury-1.8.dll"
-#define PAK_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/zzz_LawinServer.pak"
-#define SIG_URL "https://github.com/absoluteSpacehead/testtesttest/raw/refs/heads/main/zzz_LawinServer.sig"
+#define DLL_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/Mercury-1.8.dll"
+#define PAK_URL_18 "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/zzz_LawinServer.pak"
+#define SIG_URL_18 "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/zzz_LawinServer.sig"
 
 HANDLE job;
 
