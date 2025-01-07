@@ -52,7 +52,7 @@ int DownloadFile(const char* URL, const wchar_t outName[FILENAME_MAX])
 
     if (!curl)
     {
-        std::cout << "cURL init failed.\n";
+        std::cout << "\ncURL init failed.\n";
         return 1;
     }
 
@@ -61,7 +61,7 @@ int DownloadFile(const char* URL, const wchar_t outName[FILENAME_MAX])
     {
         char out[128];
         strerror_s(out, fpOpen);
-        std::cout << "_wfopen_s failed (" << out << ") .\n";
+        std::cout << "\n_wfopen_s failed (" << out << ") .\n";
         return 2;
     }
     
@@ -73,7 +73,7 @@ int DownloadFile(const char* URL, const wchar_t outName[FILENAME_MAX])
 
     if (res != 0)
     {
-        std::cout << "cURL failed (" << curl_easy_strerror(res) << ").\n";
+        std::cout << "\ncURL failed (" << curl_easy_strerror(res) << ").\n";
         return 3;
     }
 
@@ -125,7 +125,7 @@ int RunLawin()
 
         if (DownloadFile(LAWIN_URL, (localAppData + L"\\LawinServer.zip").c_str()) != 0)
         {
-            std::cerr << "LawinServer failed to download.\n";
+            std::cerr << "\nLawinServer failed to download.\n";
             return 1;
         }
 
@@ -138,14 +138,14 @@ int RunLawin()
         zip_source_t* src = zip_source_win32w_create((localAppData + L"\\LawinServer.zip").c_str(), 0, -1, &err);
         if (!src)
         {
-            std::cerr << "Source creation failed (" << zip_error_strerror(&err) << ").\n";
+            std::cerr << "\nSource creation failed (" << zip_error_strerror(&err) << ").\n";
             return 2;
         }
 
         zip* file = zip_open_from_source(src, 0, &err);
         if (!file)
         {
-            std::cerr << "File opening failed (" << zip_error_strerror(&err) << ").\n";
+            std::cerr << "\nFile opening failed (" << zip_error_strerror(&err) << ").\n";
             zip_source_free(src);
             return 3;
         }
@@ -178,7 +178,7 @@ int RunLawin()
             zip_file* zFile = zip_fopen_index(file, i, 0);
             if (!zFile)
             {
-                std::cerr << "Failed to open file " << name << " (file may be corrupt).\n";
+                std::cerr << "\nFailed to open file " << name << " (file may be corrupt).\n";
                 return 4;
             }
 
@@ -186,7 +186,7 @@ int RunLawin()
 
             if (fileHandle == INVALID_HANDLE_VALUE)
             {
-                std::wcerr << "Failed to create file " << targ << ".\n";
+                std::wcerr << "\nFailed to create file " << targ << ".\n";
                 return 5;
             }
 
@@ -197,7 +197,7 @@ int RunLawin()
             {
                 if (!WriteFile(fileHandle, buf, (DWORD)read, &written, nullptr))
                 {
-                    std::wcerr << "Error writing file " << targ << ".\n";
+                    std::wcerr << "\nError writing file " << targ << ".\n";
                     return 6;
                 }
             }
@@ -233,7 +233,7 @@ int RunLawin()
     // make sure that it actually. installed the packages
     if (!std::filesystem::exists(localAppData + L"\\LawinServer\\node_modules"))
     {
-        std::cerr << "Packages were not installed correctly (node_modules doesn't exist).\n";
+        std::cerr << "\nPackages were not installed correctly (node_modules doesn't exist).\n\nnpm may either not be installed or not be added to PATH. Ensure node.js and npm have been installed correctly.\nIf node.js has not yet been installed, visit https://nodejs.org to download and install it.\n";
         return 7;
     }
 
@@ -245,7 +245,11 @@ int RunLawin()
     startupInfo.cb = sizeof(STARTUPINFO);
     processInformation = { 0 };
     cmd = L"node index.js";
-    CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, 0x0, nullptr, (localAppData + L"\\LawinServer").c_str(), &startupInfo, &processInformation);
+    if (!CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, 0x0, nullptr, (localAppData + L"\\LawinServer").c_str(), &startupInfo, &processInformation))
+    {
+        std::cerr << "\nLawinServer failed to start.\n\nnode.js may either not be installed or not be added to PATH. Ensure node.js and npm have been installed correctly.\nIf node.js has not yet been installed, visit https://nodejs.org to download and install it.\n";
+        return 7;
+    }
 
     AssignProcessToJobObject(job, processInformation.hProcess);
 
@@ -272,7 +276,7 @@ int SetupOTPak()
 
         if (DownloadFile(PAK_URL_OT, (pathAsWstring + L"FortniteGame-WindowsClient_p.pak").c_str()) != 0)
         {
-            std::cerr << "Failed to download FortniteGame-WindowsClient_p.pak.\n";
+            std::cerr << "\nFailed to download FortniteGame-WindowsClient_p.pak.\n";
             return 3;
         }
 
@@ -294,32 +298,32 @@ int SetupOTPakless()
         pathAsWstring = CONFIG_PATH_OT;
         if (DownloadFile(DEFAULTENGINE_URL, (pathAsWstring + L"DefaultEngine.ini").c_str()) != 0)
         {
-            std::cerr << "Failed to download DefaultEngine.ini.\n";
+            std::cerr << "\nFailed to download DefaultEngine.ini.\n";
             return 3;
         }
 
         if (DownloadFile(DEFAULTGAME_URL, (pathAsWstring + L"DefaultGame.ini").c_str()) != 0)
         {
-            std::cerr << "Failed to download DefaultGame.ini.\n";
+            std::cerr << "\nFailed to download DefaultGame.ini.\n";
             return 3;
         }
 
         pathAsWstring = CONTENT_PATH_OT;
         if (DownloadFile(ABILITIES_URL, (pathAsWstring + L"GE_AllAbilities.uasset").c_str()) != 0)
         {
-            std::cerr << "Failed to download GE_AllAbilities.uasset.\n";
+            std::cerr << "\nFailed to download GE_AllAbilities.uasset.\n";
             return 3;
         }
 
         if (DownloadFile(ACTOR_URL, (pathAsWstring + L"InGame_Actor.uasset").c_str()) != 0)
         {
-            std::cerr << "Failed to download InGame_Actor.uasset.\n";
+            std::cerr << "\nFailed to download InGame_Actor.uasset.\n";
             return 3;
         }
 
         if (DownloadFile(GAMEMODE_URL, (pathAsWstring + L"InGame_Gamemode.uasset").c_str()) != 0)
         {
-            std::cerr << "Failed to download InGame_Gamemode.uasset.\n";
+            std::cerr << "\nFailed to download InGame_Gamemode.uasset.\n";
             return 3;
         }
 
@@ -349,7 +353,7 @@ int SetupOT()
     {
         if (SetupOTPak() != 0)
         {
-            std::cerr << "Failed to set up Mercury. (OT6.5 pakked)\n";
+            std::cerr << "\nFailed to set up Mercury. (OT6.5 pakked)\n";
             return 2;
         }
     }
@@ -357,7 +361,7 @@ int SetupOT()
     {
         if (SetupOTPakless() != 0)
         {
-            std::cerr << "Failed to set up Mercury. (OT6.5 pakless)\n";
+            std::cerr << "\nFailed to set up Mercury. (OT6.5 pakless)\n";
             return 2;
         }
     }
@@ -406,19 +410,19 @@ int Setup18()
 
         if (DownloadFile(DLL_URL, (localAppData + L"\\Mercury-1.8.dll").c_str()) != 0)
         {
-            std::cerr << "Failed to download Mercury-1.8.dll.\n";
+            std::cerr << "\nFailed to download Mercury-1.8.dll.\n";
             return 2;
         }
 
         if (DownloadFile(PAK_URL_18, (pathAsWstring + L"zzz_LawinServer.pak").c_str()) != 0)
         {
-            std::cerr << "Failed to download zzz_LawinServer.pak.\n";
+            std::cerr << "\nFailed to download zzz_LawinServer.pak.\n";
             return 2;
         }
 
         if (DownloadFile(SIG_URL_18, (pathAsWstring + L"zzz_LawinServer.sig").c_str()) != 0)
         {
-            std::cerr << "Failed to download zzz_LawinServer.sig.\n";
+            std::cerr << "\nFailed to download zzz_LawinServer.sig.\n";
             return 2;
         }
         
@@ -450,7 +454,7 @@ int Setup18()
 
     if (!write)
     {
-        std::cerr << "DLL failed to inject (WriteProcessMemory failed).\n";
+        std::cerr << "\nDLL failed to inject (WriteProcessMemory failed).\n";
 
         TerminateProcess(processInformation.hProcess, 0);
         return 3;
@@ -460,7 +464,7 @@ int Setup18()
 
     if (!thread)
     {
-        std::cerr << "DLL failed to inject (CreateRemoteThread failed).\n";
+        std::cerr << "\nDLL failed to inject (CreateRemoteThread failed).\n";
 
         TerminateProcess(processInformation.hProcess, 0);
         return 3;
@@ -487,24 +491,6 @@ int main()
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobInfo = { 0 };
     jobInfo.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
     SetInformationJobObject(job, JobObjectExtendedLimitInformation, &jobInfo, sizeof(jobInfo));
-
-    // a lil hacky i dont care.
-    std::wstring cmd = L"cmd /c npm --version";
-    STARTUPINFOW startupInfo = { 0 };
-    startupInfo.cb = sizeof(STARTUPINFO);
-    PROCESS_INFORMATION processInformation = { 0 };
-
-    if (!CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &processInformation))
-    {
-        std::cerr << "npm is either not installed or has not been added to PATH. Ensure node.js and npm have been installed correctly.\nIf node.js has not yet been installed, visit https://nodejs.org to download and install it.\n";
-        CloseHandle(processInformation.hProcess);
-        CloseHandle(processInformation.hThread);
-        Exit();
-        return 3;
-    }
-
-    CloseHandle(processInformation.hProcess);
-    CloseHandle(processInformation.hThread);
 
     if (std::filesystem::exists(BINARY_PATH_OT) || std::filesystem::exists(BINARY_PATH_OT_FUCKBLK))
     {
@@ -540,14 +526,14 @@ int main()
         }
         else
         {
-            std::wcerr << "Binary ProductVersion is wrong (got " << version << ", expected " << PRODUCT_VERSION_1_8 << "). Ensure you're using Fortnite 1.8.\n";
+            std::wcerr << "\nBinary ProductVersion is wrong (got " << version << ", expected " << PRODUCT_VERSION_1_8 << "). Ensure you're using Fortnite 1.8.\n";
             Exit();
             return 2;
         }
     }
     else
     {
-        std::cerr << "No binaries could be found. Ensure the launcher is placed alongside the FortniteGame and Engine folders.\n";
+        std::cerr << "\nNo binaries could be found. Ensure the launcher is placed alongside the FortniteGame and Engine folders.\n";
         Exit();
         return 1;
     }
