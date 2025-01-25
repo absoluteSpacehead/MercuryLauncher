@@ -29,6 +29,8 @@
 
 HANDLE job;
 
+bool verbosecURL;
+
 void Exit()
 {
     std::cout << "Press any key to exit.\n";
@@ -69,6 +71,10 @@ int DownloadFile(const char* URL, const wchar_t outName[FILENAME_MAX])
     curl_easy_setopt(curl, CURLOPT_URL, URL);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteData);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+
+    if (verbosecURL)
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+
     res = curl_easy_perform(curl);
 
     if (res != 0)
@@ -485,8 +491,16 @@ int Setup18()
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
+    for (int i = 0; i < argc; i++)
+    {
+        if (_stricmp(argv[i], "-verbosecurl") == 0)
+        {
+            verbosecURL = true;
+        }
+    }
+
     job = CreateJobObjectW(nullptr, nullptr);
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobInfo = { 0 };
     jobInfo.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
