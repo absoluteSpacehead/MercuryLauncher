@@ -24,6 +24,7 @@
 #define PAKS_PATH_1_8 L".\\FortniteGame\\Content\\Paks\\"
 #define PRODUCT_VERSION_1_8 L"3724489"
 #define DLL_URL "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/Mercury-1.8.dll"
+#define INJECTOR_URL "https://github.com/absoluteSpacehead/MercuryLauncher/releases/latest/download/MercuryInjector.dll"
 #define PAK_URL_18 "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/zzz_LawinServer.pak"
 #define SIG_URL_18 "https://github.com/absoluteSpacehead/MercuryLauncher-Assets/raw/refs/heads/main/zzz_LawinServer.sig"
 
@@ -405,25 +406,24 @@ int Setup18()
         return 1;
 
     std::wstring localAppData;
-
     GetLocalAppData(localAppData);
 
-    // check that we have our dll. this isn't required for OT so it's not linked, means you only need one file in the OT dir
-    if (!std::filesystem::exists(".\\MercuryInjector.dll"))
-    {
-        std::cerr << "Required DLL (MercuryInjector.dll) is missing. Ensure all files were extracted properly.\n";
-        return 4;
-    }
-
-    // check that we have the mercury dll AND the sig. someone could be using the same build folder but have wiped their appdata, etc
+    // check that we have the mercury dlls AND the sig. someone could be using the same build folder but have wiped their appdata, etc
+    // check for injector for backcomp
     std::wstring pathAsWstring(PAKS_PATH_1_8);
-    if (!std::filesystem::exists(localAppData + L"\\Mercury-1.8.dll") || !std::filesystem::exists(pathAsWstring + L"zzz_LawinServer.sig"))
+    if (!std::filesystem::exists(localAppData + L"\\Mercury-1.8.dll") || !std::filesystem::exists(localAppData + L"\\MercuryInjector.dll") || !std::filesystem::exists(pathAsWstring + L"zzz_LawinServer.sig"))
     {
         std::cout << "Required Mercury files are missing. Downloading...\n";
 
         if (DownloadFile(DLL_URL, (localAppData + L"\\Mercury-1.8.dll").c_str()) != 0)
         {
             std::cerr << "\nFailed to download Mercury-1.8.dll.\n";
+            return 2;
+        }
+
+        if (DownloadFile(INJECTOR_URL, (localAppData + L"\\MercuryInjector.dll").c_str()) != 0)
+        {
+            std::cerr << "\nFailed to download MercuryInjector.dll.\n";
             return 2;
         }
 
@@ -463,8 +463,7 @@ int Setup18()
 
     AssignProcessToJobObject(job, processInformation.hProcess);
 
-    std::wstring dllPath(std::filesystem::current_path().c_str());
-    dllPath += L"\\MercuryInjector.dll";
+    std::wstring dllPath((localAppData + L"\\MercuryInjector.dll").c_str());
 
     // reference https://github.com/ZeroMemoryEx/Dll-Injector/blob/master/DLL-Injector/Dll-Injector.cpp#L43
     HANDLE fnHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processInformation.dwProcessId);
