@@ -39,6 +39,7 @@ void SetSubGameHook(void* thisref, uint8_t SubGame)
 
     if (!write)
     {
+        MessageBoxA(NULL, "DLL failed to inject (WriteProcessMemory failed).", NULL, MB_OK);
         std::cerr << "\nDLL failed to inject (WriteProcessMemory failed).\n";
 
         MH_DisableHook(Offset<uintptr_t>(SetSubGameOffset));
@@ -51,6 +52,7 @@ void SetSubGameHook(void* thisref, uint8_t SubGame)
 
     if (!thread)
     {
+        MessageBoxA(NULL, "DLL failed to inject (CreateRemoteThread failed).", NULL, MB_OK);
         std::cerr << "\nDLL failed to inject (CreateRemoteThread failed).\n";
 
         MH_DisableHook(Offset<uintptr_t>(SetSubGameOffset));
