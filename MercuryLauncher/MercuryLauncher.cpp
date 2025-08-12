@@ -229,7 +229,7 @@ int RunLawin()
     startupInfo.cb = sizeof(STARTUPINFO);
     PROCESS_INFORMATION processInformation = { 0 };
     std::wstring cmd = L"cmd /c npm i";
-    CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, (localAppData + L"\\LawinServer").c_str(), &startupInfo, &processInformation);
+    CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, FALSE, 0x0, nullptr, (localAppData + L"\\LawinServer").c_str(), &startupInfo, &processInformation);
 
     WaitForSingleObject(processInformation.hProcess, INFINITE);
 
@@ -379,7 +379,14 @@ int SetupOT()
     PROCESS_INFORMATION processInformation = { 0 };
     std::wstring cmd(BINARY_PATH_OT);
     cmd += L" -log -AUTH_LOGIN=unknown -AUTH_PASSWORD=5001 -AUTH_TYPE=exchangecode";
-    CreateProcessW(BINARY_PATH_OT, &cmd[0], nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
+
+    bool success = CreateProcessW(BINARY_PATH_OT, &cmd[0], nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
+
+    if (!success)
+    {
+        std::cerr << "\nFailed to launch Fortnite. (" << GetLastError() << ")\n";
+        return 3;
+    }
 
     AssignProcessToJobObject(job, processInformation.hProcess);
 
@@ -446,7 +453,13 @@ int Setup18()
     std::wstring cmdl(BINARY_PATH_1_8);
     cmdl += L" -skippatchcheck -epicportal -HTTP=WinInet -log";
 
-    CreateProcessW(BINARY_PATH_1_8, &cmdl[0], nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
+    bool success = CreateProcessW(BINARY_PATH_1_8, &cmdl[0], nullptr, nullptr, FALSE, 0x0, nullptr, nullptr, &startupInfo, &processInformation);
+
+    if (!success)
+    {
+        std::cerr << "\nFailed to launch Fortnite. (" << GetLastError() << ")\n";
+        return 5;
+    }
 
     AssignProcessToJobObject(job, processInformation.hProcess);
 
